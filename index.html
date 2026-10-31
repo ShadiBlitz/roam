@@ -140,6 +140,13 @@ html{-webkit-tap-highlight-color:transparent}body{background:#e5e5ea;font-family
 .visit-ticket-handoff{color:var(--muted);font-size:11px;line-height:1.5;text-align:center;margin:12px 8px 0}.visit-ticket-back{display:block;width:100%;border:0;background:none;color:var(--accent);font-size:13px;font-weight:600;padding:14px;min-height:44px;margin-top:5px}
 .visit-card-main:focus-visible,.visit-ticket-button:focus-visible,.visit-booking-row:focus-visible,.visit-ticket-back:focus-visible,.visit-ticket-checkout:focus-visible,.visit-ticket-close:focus-visible{outline:2px solid var(--accent);outline-offset:-3px;border-radius:12px}
 @media(max-width:350px){.visit-ticket-schedule strong{font-size:12px}.visit-ticket-heading{font-size:25px}.visit-card-footer{margin-left:70px}}
+
+/* iOS Safari: let the drawer handle drag while the sheet body owns vertical scrolling. */
+.vaul-panel{display:flex;flex-direction:column;overflow:hidden;max-height:calc(100dvh - env(safe-area-inset-top) - 12px);overscroll-behavior:contain}
+.vaul-panel .vaul-handle{flex:0 0 auto}
+.vaul-scroll-body{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y;scrollbar-width:none}
+.vaul-scroll-body::-webkit-scrollbar{display:none}
+@supports(height:100svh){.vaul-panel{max-height:calc(100svh - env(safe-area-inset-top) - 12px)}}
 </style></head><body><div id="app"></div><script type="importmap">{"imports":{"react":"https://esm.sh/react@18.3.1","react/jsx-runtime":"https://esm.sh/react@18.3.1/jsx-runtime","react/jsx-dev-runtime":"https://esm.sh/react@18.3.1/jsx-dev-runtime","react-dom":"https://esm.sh/react-dom@18.3.1?external=react","react-dom/client":"https://esm.sh/react-dom@18.3.1/client?external=react"}}</script><div id="vaul-root"></div><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"><script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script><script>
 const seed=[{id:'a1',day:1,time:'09:30',title:'Breakfast in Saint-Germain',desc:'Local café · 60 min',category:'food',locked:false},{id:'a2',day:1,time:'11:00',title:'Louvre Museum',desc:'Art & culture · 120 min',category:'culture',locked:false},{id:'a3',day:1,time:'14:00',title:'Tuileries Garden',desc:'Relaxed stroll · 45 min',category:'outdoors',locked:false},{id:'a4',day:1,time:'18:30',title:'Seine sunset cruise',desc:'Romantic experience · 75 min',category:'romantic',locked:true},{id:'b1',day:2,time:'09:30',title:'Explore Montmartre',desc:'Neighborhood walk · 90 min',category:'outdoors',locked:false},{id:'b2',day:2,time:'13:00',title:'Sacré-Cœur Basilica',desc:'Architecture and views · 60 min',category:'culture',locked:false},{id:'c1',day:3,time:'10:00',title:'Eiffel Tower',desc:'Iconic landmark · 90 min',category:'landmark',locked:false},{id:'c2',day:3,time:'15:00',title:'Arc de Triomphe',desc:'City views · 60 min',category:'landmark',locked:false},{id:'d1',day:4,time:'10:00',title:'Luxembourg Gardens',desc:'Gardens · 75 min',category:'outdoors',locked:false},{id:'e1',day:5,time:'10:00',title:'Le Marais',desc:'Boutiques and local cafés · 120 min',category:'outdoors',locked:false},
 {id:'meal1l',day:1,time:'12:45',title:'Lunch near the Louvre',desc:'French bistro · 60 min · Venue unverified',category:'food',mealType:'lunch',locked:false},
@@ -373,7 +380,7 @@ function SheetHost(){
     h('div',{className:'vaul-handle','aria-hidden':'true'}),
     h(Drawer.Title,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'Travel planner details'),
     h(Drawer.Description,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'View details and manage the selected trip activity'),
-    h('div',{dangerouslySetInnerHTML:{__html:open?sheetContent():''}})
+    h('div',{className:'vaul-scroll-body','data-vaul-no-drag':true,dangerouslySetInnerHTML:{__html:open?sheetContent():''}})
    )
   )
   ,h(Drawer.NestedRoot,{open:Boolean(S.ticketTarget),onOpenChange:v=>{if(!v)closeVisitTickets()},shouldScaleBackground:false},
@@ -383,7 +390,7 @@ function SheetHost(){
      h('div',{className:'vaul-handle','aria-hidden':'true'}),
      h(Drawer.Title,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'Tickets for this visit'),
      h(Drawer.Description,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'Review your planned visit and continue to the official ticket or visitor website.'),
-     h('div',{dangerouslySetInnerHTML:{__html:S.ticketTarget?visitTicketsSheet():''}})
+     h('div',{className:'vaul-scroll-body','data-vaul-no-drag':true,dangerouslySetInnerHTML:{__html:S.ticketTarget?visitTicketsSheet():''}})
     )
    )
   )
@@ -394,7 +401,7 @@ function SheetHost(){
     h('div',{className:'vaul-handle','aria-hidden':'true'}),
     h(Drawer.Title,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'About locking an activity'),
     h(Drawer.Description,{style:{position:'absolute',width:1,height:1,overflow:'hidden',clip:'rect(0,0,0,0)'}},'How locking protects an activity from AI changes'),
-    h('div',{dangerouslySetInnerHTML:{__html:S.lockHelpOpen?lockHelpSheet():''}})
+    h('div',{className:'vaul-scroll-body','data-vaul-no-drag':true,dangerouslySetInnerHTML:{__html:S.lockHelpOpen?lockHelpSheet():''}})
    )
   )
  ));
