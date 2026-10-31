@@ -3,7 +3,7 @@
   'use strict';
   if (window.RoamGuide || typeof S === 'undefined') return;
   const KEY = 'roam.travel-guide.v1';
-  const icon = name => `<i class="fa-solid fa-${name}" aria-hidden="true"></i>`;
+  const icon = name => `<i data-lucide="${({ "suitcase-rolling":"luggage", "shield-heart":"shield-check", "mobile-screen-button":"smartphone", "triangle-exclamation":"triangle-alert", "arrow-up-right-from-square":"arrow-up-right", "xmark":"x", "bed":"bed-double" })[name] || name}" aria-hidden="true"></i>`;
   const html = esc;
   const copy = value => structuredClone(value);
   const dayMs = 86400000;
