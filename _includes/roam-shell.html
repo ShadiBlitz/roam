@@ -148,6 +148,15 @@ html{-webkit-tap-highlight-color:transparent}body{background:#e5e5ea;font-family
 .vaul-scroll-body::-webkit-scrollbar{display:none}
 @supports(height:100svh){.vaul-panel{max-height:calc(100svh - env(safe-area-inset-top) - 12px)}}
 
+/* Sticky, compact itinerary identity while scrolling. */
+.top.trip-top{position:sticky;top:0;z-index:19;min-height:66px;gap:14px;background:var(--bg);transition:box-shadow .18s ease,padding .18s ease}
+.trip-top-details{min-width:0;flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:3px;opacity:0;transform:translateY(5px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.trip-top-details strong{font-size:15px;font-weight:750;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trip-top-details span{font-size:11px;color:var(--muted);white-space:nowrap}
+.top.trip-top.is-condensed{box-shadow:0 1px 0 var(--line);padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:10px}
+.top.trip-top.is-condensed .trip-top-details{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.top.trip-top,.trip-top-details{transition:none}}
+
 /* Lucide icon layout */
 .lucide{display:inline-block;vertical-align:-.12em;width:1em;height:1em;stroke-width:2;flex-shrink:0}
 .nav button b .lucide{font-size:19px}.template-tags .lucide,.trip-style-chip .lucide{font-size:12px;margin-right:3px}.planning-inline-emoji .lucide{font-size:34px}.visit-booking-icon .lucide{font-size:20px}.visit-ticket-button .lucide,.visit-ticket-eyebrow .lucide{font-size:16px}.revision-icon .lucide{font-size:15px}
@@ -170,7 +179,7 @@ const seed=[{id:'a1',day:1,time:'09:30',title:'Breakfast in Saint-Germain',desc:
 const S={wizardStep:0,interests:['Local food','Landmarks'],diet:'Anything',notes:'',page:'home',destination:'Paris',days:5,startDate:'2026-11-12',endDate:'2026-11-16',dateError:'',travelers:'Couple',hasKids:null,kidAges:[],pace:'Balanced',budget:'Moderate',theme:'Romantic',day:2,view:'timeline',activities:structuredClone(seed),tripCreated:false,sheet:null,selected:null,proposal:null,revision:1,history:[],revisionLog:[],feedback:[],aiCalls:0,avoided:0,templates:0,showValidation:false,toast:null,ticketTarget:null,profile:{romantic:true,outdoors:true,museums:false},generationCount:0,generating:false,planStage:0,savedTrips:[],selectedTemplate:null,templateStart:'',templateEnd:'',templateError:''};
 const $=id=>document.getElementById(id);const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const uid=()=>Math.random().toString(36).slice(2,9);const dayActs=()=>S.activities.filter(x=>x.day===S.day).sort((a,b)=>a.time.localeCompare(b.time));const fa=(name)=>'<i data-lucide="'+name+'" aria-hidden="true"></i>';const btn=(text,fn,cl='btn')=>`<button class="${cl}" onclick="${fn}">${text}</button>`;
 function toast(msg){}
-function render(){let html=`<header class="top"><div class="logo">roam<span>.</span></div></header>`;html+=S.page==='home'?home():S.page==='wizard'?wizard():S.page==='planning'?planningPage():S.page==='trip'?trip():S.page==='explore'?explore():S.page==='template'?templatePage():S.page==='profile'?profile():trips();html+=`<nav class="nav">${[['home','house','Home'],['explore','compass','Explore'],['trips','luggage','My Trips'],['profile','user','Profile']].map(([id,ico,label])=>`<button class="${S.page===id?'active':''}" onclick="go('${id}')"><b>${fa(ico)}</b>${label}</button>`).join('')}</nav>`;$('app').innerHTML=html;if(S.page==='trip'&&S.view==='map')requestAnimationFrame(initRealMap);window.dispatchEvent(new Event('roam:sheet-update'))}
+function render(){let html=`<header class="top ${S.page==='trip'?'trip-top':''}"><div class="logo">roam<span>.</span></div>${S.page==='trip'?`<div class="trip-top-details" aria-label="Current trip"><strong>${esc(S.destination)}</strong><span>${formatDate(S.startDate)} – ${formatDate(S.endDate)} · ${S.days} days</span></div>`:''} </header>`;html+=S.page==='home'?home():S.page==='wizard'?wizard():S.page==='planning'?planningPage():S.page==='trip'?trip():S.page==='explore'?explore():S.page==='template'?templatePage():S.page==='profile'?profile():trips();html+=`<nav class="nav">${[['home','house','Home'],['explore','compass','Explore'],['trips','luggage','My Trips'],['profile','user','Profile']].map(([id,ico,label])=>`<button class="${S.page===id?'active':''}" onclick="go('${id}')"><b>${fa(ico)}</b>${label}</button>`).join('')}</nav>`;$('app').innerHTML=html;if(S.page==='trip'&&S.view==='map')requestAnimationFrame(initRealMap);window.dispatchEvent(new Event('roam:sheet-update'))}
 function dateUTC(value){const [y,m,d]=value.split('-').map(Number);return Date.UTC(y,m-1,d)}
 function formatDate(value){if(!value)return 'Choose dates';return new Date(dateUTC(value)).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})}
 function dayDate(index){if(!S.startDate)return '';const d=new Date(dateUTC(S.startDate)+(index-1)*86400000);return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'})}
@@ -411,4 +420,19 @@ function SheetHost(){
  ));
 }
 root.render(h(SheetHost));
+
+/* Keep the itinerary name and dates visible once the large heading scrolls away. */
+(function(){
+  let last = null;
+  function syncTripTop(){
+    const top = document.querySelector('.top.trip-top');
+    if (!top) { last = null; return; }
+    const heading = document.querySelector('.trip-heading-simple');
+    const condensed = !!heading && heading.getBoundingClientRect().bottom <= top.getBoundingClientRect().bottom + 8;
+    if (last !== condensed) { top.classList.toggle('is-condensed',condensed); last = condensed; }
+  }
+  window.addEventListener('scroll',syncTripTop,{passive:true});
+  window.addEventListener('resize',syncTripTop,{passive:true});
+  window.addEventListener('roam:sheet-update',()=>{last=null;syncTripTop()});
+})();
 </script></body></html>
