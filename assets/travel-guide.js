@@ -190,7 +190,7 @@
     const template = document.createElement('template'); template.innerHTML = base.trip();
     const tabs = template.content.querySelector('.tabs');
     if (!tabs) return base.trip();
-    tabs.insertAdjacentHTML('beforeend', `<button class="tab ${S.view === 'guide' ? 'active' : ''}" onclick="RoamGuide.show()">${icon('book-open')} Guide</button>`);
+    tabs.insertAdjacentHTML('beforeend', `<button class="tab ${S.view === 'guide' ? 'active' : ''}" onclick="RoamGuide.show()">${icon('book-open')} Prepare</button>`);
     tabs.setAttribute('aria-label', 'Trip view');
     if (S.view === 'guide') {
       while (tabs.nextSibling) tabs.nextSibling.remove();
