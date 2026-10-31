@@ -1,0 +1,9 @@
+/* Lucide line icons: consistent sizing in the existing iOS-style UI. */
+.lucide{display:inline-block;width:1em;height:1em;stroke-width:2;vertical-align:-.12em;flex-shrink:0}
+.nav button b .lucide{width:19px;height:19px}
+.template-tags .lucide,.trip-style-chip .lucide{width:12px;height:12px;margin-right:3px}
+.planning-inline-emoji .lucide{width:34px;height:34px}
+.visit-booking-icon .lucide{width:20px;height:20px}
+.visit-ticket-button .lucide,.visit-ticket-eyebrow .lucide{width:16px;height:16px}
+.revision-icon .lucide{width:15px;height:15px}
+.guide-symbol .lucide,.guide-ready-icon .lucide{width:20px;height:20px}

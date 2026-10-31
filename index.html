@@ -2,6 +2,6 @@
 layout: null
 ---
 {%- capture roam_app -%}{%- include roam-shell.html -%}{%- endcapture -%}
-{%- capture guide_head -%}<link rel="stylesheet" href="./assets/travel-guide.css"></head>{%- endcapture -%}
-{%- capture guide_body -%}<script src="./assets/travel-guide.js"></script><script src="./assets/guide-state.js"></script></body>{%- endcapture -%}
+{%- capture guide_head -%}<link rel="stylesheet" href="./assets/travel-guide.css"><link rel="stylesheet" href="./assets/lucide.css"></head>{%- endcapture -%}
+{%- capture guide_body -%}<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script><script src="./assets/lucide-init.js" defer></script><script src="./assets/travel-guide.js"></script><script src="./assets/guide-state.js"></script></body>{%- endcapture -%}
 {{- roam_app | replace: '</head>', guide_head | replace: '</body>', guide_body -}}
