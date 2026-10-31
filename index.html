@@ -120,7 +120,7 @@ const seed=[{id:'a1',day:1,time:'09:30',title:'Breakfast in Saint-Germain',desc:
 {id:'meal5d',day:5,time:'19:00',title:'Farewell dinner in Paris',desc:'Restaurant · 90 min · Venue unverified',category:'food',mealType:'dinner',locked:false}];
 const S={wizardStep:0,interests:['Local food','Landmarks'],diet:'Anything',notes:'',page:'home',destination:'Paris',days:5,startDate:'2026-11-12',endDate:'2026-11-16',dateError:'',travelers:'Couple',hasKids:null,kidAges:[],pace:'Balanced',budget:'Moderate',theme:'Romantic',day:2,view:'timeline',activities:structuredClone(seed),tripCreated:false,sheet:null,selected:null,proposal:null,revision:1,history:[],revisionLog:[],feedback:[],aiCalls:0,avoided:0,templates:0,showValidation:false,toast:null,profile:{romantic:true,outdoors:true,museums:false},generationCount:0,generating:false,planStage:0,savedTrips:[],selectedTemplate:null,templateStart:'',templateEnd:'',templateError:''};
 const $=id=>document.getElementById(id);const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const uid=()=>Math.random().toString(36).slice(2,9);const dayActs=()=>S.activities.filter(x=>x.day===S.day).sort((a,b)=>a.time.localeCompare(b.time));const btn=(text,fn,cl='btn')=>`<button class="${cl}" onclick="${fn}">${text}</button>`;
-function toast(msg){window.dispatchEvent(new CustomEvent('roam:toast',{detail:String(msg)}))}
+function toast(msg){}
 function render(){let html=`<header class="top"><div class="logo">roam<span>.</span></div></header>`;html+=S.page==='home'?home():S.page==='wizard'?wizard():S.page==='planning'?planningPage():S.page==='trip'?trip():S.page==='explore'?explore():S.page==='template'?templatePage():S.page==='profile'?profile():trips();html+=`<nav class="nav">${[['home','⌂','Home'],['explore','◇','Explore'],['trips','▤','My Trips'],['profile','◉','Profile']].map(([id,ico,label])=>`<button class="${S.page===id?'active':''}" onclick="go('${id}')"><b>${ico}</b>${label}</button>`).join('')}</nav>`;$('app').innerHTML=html;if(S.page==='trip'&&S.view==='map')requestAnimationFrame(initRealMap);window.dispatchEvent(new Event('roam:sheet-update'))}
 function dateUTC(value){const [y,m,d]=value.split('-').map(Number);return Date.UTC(y,m-1,d)}
 function formatDate(value){if(!value)return 'Choose dates';return new Date(dateUTC(value)).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})}
@@ -261,15 +261,13 @@ function go(page){if(S.page==='trip'&&page!=='trip')persistActiveTrip();S.page=p
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {Drawer} from 'https://esm.sh/vaul@1.1.2?external=react,react-dom';
-import {Toaster, toast as sonnerToast} from 'https://esm.sh/sonner@2.0.7?external=react,react-dom';
-window.addEventListener('roam:toast',event=>sonnerToast(event.detail));
 const h=React.createElement;
 const root=createRoot(document.getElementById('vaul-root'));
 function SheetHost(){
  const [version,setVersion]=React.useState(0);
  React.useEffect(()=>{const update=()=>setVersion(v=>v+1);window.addEventListener('roam:sheet-update',update);return()=>window.removeEventListener('roam:sheet-update',update)},[]);
  const open=Boolean(S.sheet);
- return h(React.Fragment,null,h(Toaster,{position:'bottom-center',duration:2800,closeButton:false,richColors:false,visibleToasts:3,offset:88,style:{width:'min(440px, calc(100vw - 24px))',maxWidth:'calc(100vw - 24px)'},toastOptions:{style:{background:'var(--white)',color:'var(--ink)',border:'1px solid var(--line)',borderRadius:'14px',boxShadow:'0 8px 28px #00000018',fontFamily:'inherit'}}}),h(Drawer.Root,{open,onOpenChange:v=>{if(!v && !S.lockHelpOpen)closeSheet()},shouldScaleBackground:false},
+ return h(React.Fragment,null,h(Drawer.Root,{open,onOpenChange:v=>{if(!v && !S.lockHelpOpen)closeSheet()},shouldScaleBackground:false},
   h(Drawer.Portal,null,
    h(Drawer.Overlay,{className:'vaul-overlay',style:{zIndex:100}}),
    h(Drawer.Content,{className:'vaul-panel',style:{position:'fixed',bottom:0,left:0,right:0,zIndex:101}},
