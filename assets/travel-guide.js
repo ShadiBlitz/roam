@@ -3,7 +3,7 @@
   'use strict';
   if (window.RoamGuide || typeof S === 'undefined') return;
   const KEY = 'roam.travel-guide.v1';
-  const icon = name => `<i data-lucide="${({ "suitcase-rolling":"luggage", "shield-heart":"shield-check", "mobile-screen-button":"smartphone", "triangle-exclamation":"triangle-alert", "arrow-up-right-from-square":"arrow-up-right", "xmark":"x", "bed":"bed-double" })[name] || name}" aria-hidden="true"></i>`;
+  const icon = name => `<i class="fa-solid fa-${name}" aria-hidden="true"></i>`;
   const html = esc;
   const copy = value => structuredClone(value);
   const dayMs = 86400000;
@@ -190,7 +190,7 @@
     const template = document.createElement('template'); template.innerHTML = base.trip();
     const tabs = template.content.querySelector('.tabs');
     if (!tabs) return base.trip();
-    tabs.insertAdjacentHTML('beforeend', `<button class="tab ${S.view === 'guide' ? 'active' : ''}" onclick="RoamGuide.show()">${icon('book-open')} Essentials</button>`);
+    tabs.insertAdjacentHTML('beforeend', `<button class="tab ${S.view === 'guide' ? 'active' : ''}" onclick="RoamGuide.show()">${icon('book-open')} Guide</button>`);
     tabs.setAttribute('aria-label', 'Trip view');
     if (S.view === 'guide') {
       while (tabs.nextSibling) tabs.nextSibling.remove();
@@ -203,7 +203,7 @@
     template.content.querySelectorAll('.tripCard').forEach((card, i) => {
       const t = S.savedTrips[i]; if (!t) return;
       const button = document.createElement('button'); button.className = 'guide-trip-entry'; button.type = 'button'; button.dataset.guideTrip = t.id;
-      button.innerHTML = `${icon('book-open')} <span>Essentials</span>${icon('chevron-right')}`;
+      button.innerHTML = `${icon('book-open')} <span>Travel guide</span>${icon('chevron-right')}`;
       card.querySelector('.content')?.appendChild(button);
     });
     return template.innerHTML;
